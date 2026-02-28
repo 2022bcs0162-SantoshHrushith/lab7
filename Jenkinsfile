@@ -26,12 +26,13 @@ pipeline {
         stage('Wait for Service Readiness') {
             steps {
                 script {
-                    timeout(time: 60, unit: 'SECONDS') {
+                    timeout(time: 90, unit: 'SECONDS') {
                         waitUntil {
                             def status = sh(
                                 script: "curl -s -o /dev/null -w '%{http_code}' http://localhost:${PORT}/docs || true",
                                 returnStdout: true
                             ).trim()
+                            echo "HTTP Status: ${status}"
                             return status == "200"
                         }
                     }
