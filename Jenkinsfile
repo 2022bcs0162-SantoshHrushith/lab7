@@ -5,6 +5,7 @@ pipeline {
         IMAGE = "2022bcs0162santoshhrushith/red_wine_predict_jenkins_2022bcs0162:latest"
         CONTAINER_NAME = "wine_validation_test"
         PORT = "8001"
+        BASE_URL = "http://host.docker.internal:8001"
     }
 
     stages {
@@ -30,7 +31,7 @@ pipeline {
                     timeout(time: 90, unit: 'SECONDS') {
                         waitUntil {
                             def status = sh(
-                                script: "curl -s -o /dev/null -w '%{http_code}' http://host.docker.internal:${PORT} || true",
+                                script: "curl -s -o /dev/null -w '%{http_code}' ${BASE_URL}/docs || true",
                                 returnStdout: true
                             ).trim()
 
@@ -47,7 +48,7 @@ pipeline {
                 script {
                     def response = sh(
                         script: """
-                            curl -s -X POST http://host.docker.internal:${PORT}/predict \
+                            curl -s -X POST ${BASE_URL}/predict \
                             -H "Content-Type: application/json" \
                             -d @tests/valid_input.json
                         """,
@@ -72,7 +73,7 @@ pipeline {
                 script {
                     def response = sh(
                         script: """
-                            curl -s -X POST http://host.docker.internal:${PORT}/predict \
+                            curl -s -X POST ${BASE_URL}/predict \
                             -H "Content-Type: application/json" \
                             -d @tests/invalid_input.json
                         """,
